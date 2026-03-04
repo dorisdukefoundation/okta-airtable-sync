@@ -24,11 +24,10 @@ app.get('/okta-webhook', (req, res) => {
 
 // ── Okta Event Hook receiver ──────────────────────────────────────────────
 app.post('/okta-webhook', async (req, res) => {
-  res.sendStatus(200); // Acknowledge immediately
-
   const events = req.body?.data?.events || [];
   console.log(`\n=== INCOMING WEBHOOK: ${events.length} event(s) ===`);
 
+  // Process ALL events BEFORE sending 200 — Vercel cuts off async work after response
   for (const event of events) {
     try {
       await handleEvent(event);
@@ -36,6 +35,9 @@ app.post('/okta-webhook', async (req, res) => {
       console.error(`UNHANDLED ERROR in handleEvent:`, err.message, err.stack);
     }
   }
+
+  // Acknowledge AFTER processing — Okta waits up to 3 seconds before retrying
+  res.sendStatus(200);
 });
 
 // ── Event router ──────────────────────────────────────────────────────────
