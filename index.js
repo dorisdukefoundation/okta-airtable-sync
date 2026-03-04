@@ -44,7 +44,9 @@ async function handleEvent(event) {
   console.log('Full target data:', JSON.stringify(target, null, 2));
 
   // Find the Airtable record
+  console.log(`Looking up Airtable record for ${email} / ${oktaId}`);
   const record = await findAirtableRecord(oktaId, email);
+  console.log(`Airtable record found: ${record ? record.id : 'NOT FOUND'}`);
 
   if (['user.lifecycle.deactivate', 'user.lifecycle.delete'].includes(type)) {
     // Mark INACTIVE
@@ -72,11 +74,16 @@ async function handleEvent(event) {
   }
 
   if (['user.profile.update', 'user.account.update_profile', 'user.lifecycle.activate', 'user.lifecycle.reactivate'].includes(type)) {
+    console.log(`Fetching full profile for update...`);
     const profile = await fetchOktaUser(oktaId);
+    console.log(`Profile fetched: ${profile ? 'yes' : 'null'}`);
     const fields  = buildAirtableFields(oktaId, profile);
+    console.log(`Fields to update:`, JSON.stringify(fields, null, 2));
     if (record) {
+      console.log(`Updating Airtable record ${record.id}`);
       await updateAirtableRecord(record.id, fields);
     } else {
+      console.log(`Creating new Airtable record`);
       await createAirtableRecord(fields);
     }
     console.log(`Updated user: ${email}`);
