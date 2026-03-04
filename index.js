@@ -88,20 +88,33 @@ async function handleEvent(event) {
 
 // ── Okta API: fetch full user profile ────────────────────────────────────
 async function fetchOktaUser(oktaId) {
-  const OKTA_DOMAIN = process.env.OKTA_DOMAIN; // e.g. yourorg.okta.com
+  const OKTA_DOMAIN = process.env.OKTA_DOMAIN;
   const OKTA_TOKEN  = process.env.OKTA_API_TOKEN;
 
-  const res = await fetch(`https://${OKTA_DOMAIN}/api/v1/users/${oktaId}`, {
-    headers: { Authorization: `SSWS ${OKTA_TOKEN}`, Accept: 'application/json' }
-  });
+  console.log(`Fetching Okta profile for ${oktaId} from ${OKTA_DOMAIN}`);
 
-  if (!res.ok) {
-    console.error(`Failed to fetch Okta user ${oktaId}: ${res.status}`);
+  if (!OKTA_DOMAIN || !OKTA_TOKEN) {
+    console.error('Missing OKTA_DOMAIN or OKTA_API_TOKEN env vars');
     return null;
   }
-  const user = await res.json();
-  console.log('Okta profile fields:', JSON.stringify(user.profile, null, 2));
-  return user;
+
+  try {
+    const res = await fetch(`https://${OKTA_DOMAIN}/api/v1/users/${oktaId}`, {
+      headers: { Authorization: `SSWS ${OKTA_TOKEN}`, Accept: 'application/json' }
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`Failed to fetch Okta user ${oktaId}: ${res.status} - ${body}`);
+      return null;
+    }
+    const user = await res.json();
+    console.log('Okta profile fields:', JSON.stringify(user.profile, null, 2));
+    return user;
+  } catch (err) {
+    console.error(`Exception fetching Okta user ${oktaId}:`, err.message);
+    return null;
+  }
 }
 
 // ── Map Okta profile → Airtable fields ───────────────────────────────────
