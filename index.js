@@ -161,27 +161,29 @@ function buildAirtableFields(oktaId, oktaUser) {
   if (!oktaUser) { console.error('buildAirtableFields: oktaUser is null'); return {}; }
   const p = oktaUser.profile || {};
   const fields = {
-    'User Id':         oktaId,
-    'Status':          oktaUser.status || '',
-    'Activated Date':  oktaUser.activated || '',
-    'Last Login Date': oktaUser.lastLogin || '',
-    'Username':        p.login || '',
-    'First name':      p.firstName || '',
-    'Last name':       p.lastName || '',
-    'Primary email':   p.email || '',
-    'Title':           p.title || '',
-    'Display name':    p.displayName || '',
-    'Secondary email': p.secondEmail || '',
-    'Mobile phone':    p.mobilePhone || '',
-    'Primary phone':   p.primaryPhone || '',
+    'User Id':            oktaId,
+    'Status':             oktaUser.status || '',
+    'Activated Date':     oktaUser.activated || '',
+    'Last Login Date':    oktaUser.lastLogin || '',
+    'Username':           p.login || '',
+    'First name':         p.firstName || '',
+    'Last name':          p.lastName || '',
+    'Primary email':      p.email || '',
+    'Title':              p.title || '',
+    'Display name':       p.displayName || '',
+    'Nickname':           p.nickName || p.nickname || '',
+    'Secondary email':    p.secondEmail || '',
+    'Mobile phone':       p.mobilePhone || '',
+    'Primary phone':      p.primaryPhone || '',
+    'State':              p.state || '',
     ...(mapEmployeeType(p.userType || p.employeeType || p.user_type) !== undefined
       ? { 'Employee Type': mapEmployeeType(p.userType || p.employeeType || p.user_type) }
       : {}),
-    'Employee number': p.employeeNumber || '',
-    'Cost center':     p.costCenter || '',
-    'Organization':    p.organization || '',
-    'Department':      p.department || '',
-    'ManagerId':       p.managerId || '',
+    'Employee number':    p.employeeNumber || '',
+    'Cost center':        p.costCenter || '',
+    'ManagerId':          p.managerId || '',
+    // NOTE: Organization, Department, Full Name, Manager, People Data, Calculation
+    // are computed/lookup fields in Airtable — do not write to these
   };
   console.log('Built Airtable fields:', JSON.stringify(fields, null, 2));
   return fields;
