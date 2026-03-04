@@ -70,7 +70,7 @@ async function handleEvent(event) {
     return;
   }
 
-  if (['user.profile.update', 'user.lifecycle.activate', 'user.lifecycle.reactivate'].includes(type)) {
+  if (['user.profile.update', 'user.account.update_profile', 'user.lifecycle.activate', 'user.lifecycle.reactivate'].includes(type)) {
     const profile = await fetchOktaUser(oktaId);
     const fields  = buildAirtableFields(oktaId, profile);
     if (record) {
@@ -120,13 +120,12 @@ function buildAirtableFields(oktaId, oktaUser) {
     'Secondary email':  p.secondEmail || '',
     'Mobile phone':     p.mobilePhone || '',
     'Primary phone':    p.primaryPhone || '',
-    'Employee Type':    p.userType || '',
+    'Employee Type':    p.userType || p.employeeType || p.user_type || '',
     'Employee number':  p.employeeNumber || '',
     'Cost center':      p.costCenter || '',
     'Organization':     p.organization || '',
     'Department':       p.department || '',
     'ManagerId':        p.managerId || '',
-    'Manager':          p.manager || '',
   };
 }
 
