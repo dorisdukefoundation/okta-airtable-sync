@@ -6,24 +6,6 @@ const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
 const AIRTABLE_BASE  = process.env.AIRTABLE_BASE || 'appJXuJF1SCo1t7Jn';
 const AIRTABLE_TABLE = process.env.AIRTABLE_TABLE || 'Okta Users';
 
-// ── Employee Type: Okta string → Airtable linked record ID ──────────────
-const EMPLOYEE_TYPE_MAP = {
-  'full time':        'recjy2P6bl7kW7O3N',
-  'consultant':       'recD2jkb9PsMGlK61',
-  'shared login':     'recNzTvS9cPVUB3uj',
-  'services account': 'recbwDiVkn3gfJLhy',
-  'part time':        'recCIEimd9YDXmd4e',
-  'intern':           'rec7eWxoFHmMOPs6B',
-  'seasonal':         'recqqyrIxh8e1mVuj',
-  'service account':  'rec6oERg4kuIkWPgW',
-};
-function mapEmployeeType(val) {
-  if (!val) return undefined;
-  const id = EMPLOYEE_TYPE_MAP[val.toLowerCase().trim()];
-  if (!id) { console.log(`Unknown Employee Type: "${val}" — skipping`); return undefined; }
-  return [id];
-}
-
 // ── Startup diagnostics ───────────────────────────────────────────────────
 console.log('=== STARTUP DIAGNOSTICS ===');
 console.log('OKTA_DOMAIN:', process.env.OKTA_DOMAIN || 'MISSING');
@@ -176,9 +158,7 @@ function buildAirtableFields(oktaId, oktaUser) {
     'Mobile phone':       p.mobilePhone || '',
     'Primary phone':      p.primaryPhone || '',
     'State':              p.state || '',
-    ...(mapEmployeeType(p.userType || p.employeeType || p.user_type) !== undefined
-      ? { 'Employee Type': mapEmployeeType(p.userType || p.employeeType || p.user_type) }
-      : {}),
+    'Employee Type':    p.userType || p.employeeType || p.user_type || '',
     'Employee number':    p.employeeNumber || '',
     'Cost center':        p.costCenter || '',
     'ManagerId':          p.managerId || '',
