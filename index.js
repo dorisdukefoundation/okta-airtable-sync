@@ -40,7 +40,8 @@ async function handleEvent(event) {
   const firstName = target.displayName?.split(' ')[0] || '';
   const lastName  = target.displayName?.split(' ').slice(1).join(' ') || '';
 
-  console.log(`Event: ${type} | User: ${email} (${oktaId})`);
+  console.log(`Event: ${type} | User: ${email} (${oktaId})`)
+  console.log('Full target data:', JSON.stringify(target, null, 2));
 
   // Find the Airtable record
   const record = await findAirtableRecord(oktaId, email);
@@ -98,7 +99,9 @@ async function fetchOktaUser(oktaId) {
     console.error(`Failed to fetch Okta user ${oktaId}: ${res.status}`);
     return null;
   }
-  return res.json();
+  const user = await res.json();
+  console.log('Okta profile fields:', JSON.stringify(user.profile, null, 2));
+  return user;
 }
 
 // ── Map Okta profile → Airtable fields ───────────────────────────────────
