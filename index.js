@@ -145,8 +145,8 @@ function buildAirtableFields(oktaId, oktaUser) {
   const fields = {
     'User Id':            oktaId,
     'Status':             oktaUser.status || '',
-    'Activated Date':     oktaUser.activated || '',
-    'Last Login Date':    oktaUser.lastLogin || '',
+    'Activated Date':     oktaUser.activated || null,
+    'Last Login Date':    oktaUser.lastLogin || null,
     'Username':           p.login || '',
     'First name':         p.firstName || '',
     'Last name':          p.lastName || '',
